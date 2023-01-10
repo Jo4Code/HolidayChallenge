@@ -1,0 +1,35 @@
+---
+
+- hosts: all
+  become: yes
+  tasks:
+
+  - name: update & upgrade server
+    apt:
+      update_cache: yes
+      upgrade: yes
+
+  - name: install nginx
+    apt:
+      name: nginx
+      state: latest
+
+  - name: copy bash script to server
+    copy:
+      src: config.sh
+      dest: /var/www/html
+      owner: root
+      group: root
+      mode: 0744
+
+  - name: Run shell script.
+    tags: script
+    shell: sh /var/www/html/config.sh
+
+
+  - name: restart nginx
+    tags: restart
+    service:
+      name: nginx
+      state: restarted
+      enabled: yes
